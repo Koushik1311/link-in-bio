@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -12,4 +6,57 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  pages     Page[]
+  tips      Tip[]
+}
+
+model Page {
+  id        String             @id @default(uuid())
+  slug      String             @unique
+  title     String?
+  bio       String?
+  avatarUrl String?
+  userId    String
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  links     Link[]
+  analytics ProfileAnalytics[]
+  createdAt DateTime           @default(now())
+}
+
+model Link {
+  id      String  @id @default(uuid())
+  title   String
+  url     String
+  icon    String?
+  order   Int
+  visible Boolean @default(true)
+  pageId  String
+  page    Page    @relation(fields: [pageId], references: [id], onDelete: Cascade)
+}
+
+model Tip {
+  id        String   @id @default(uuid())
+  amount    Int // Amount in paise (₹1 = 100 paise)
+  message   String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model ProfileAnalytics {
+  id          String   @id @default(uuid())
+  ipAddress   String?
+  referrer    String?
+  clickedLink String?
+  timestamp   DateTime @default(now())
+  pageId      String
+  page        Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
 }
