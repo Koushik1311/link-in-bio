@@ -9,9 +9,11 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
   email     String   @unique
-  name      String?
+  firstName String?
+  lastName  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   pages     Page[]
@@ -19,7 +21,7 @@ model User {
 }
 
 model Page {
-  id        String             @id @default(uuid())
+  id        String             @id @default(cuid())
   slug      String             @unique
   title     String?
   bio       String?
@@ -32,7 +34,7 @@ model Page {
 }
 
 model Link {
-  id      String  @id @default(uuid())
+  id      String  @id @default(cuid())
   title   String
   url     String
   icon    String?
@@ -43,7 +45,7 @@ model Link {
 }
 
 model Tip {
-  id        String   @id @default(uuid())
+  id        String   @id @default(cuid())
   amount    Int // Amount in paise (₹1 = 100 paise)
   message   String?
   userId    String
@@ -52,7 +54,7 @@ model Tip {
 }
 
 model ProfileAnalytics {
-  id          String   @id @default(uuid())
+  id          String   @id @default(cuid())
   ipAddress   String?
   referrer    String?
   clickedLink String?
