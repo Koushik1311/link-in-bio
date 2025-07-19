@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { UserJSON } from '@clerk/nextjs/server';
+import { DeletedObjectJSON, UserJSON } from '@clerk/nextjs/server';
 import { verifyWebhook, WebhookEvent } from '@clerk/nextjs/webhooks';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -38,8 +38,16 @@ export async function POST(req: NextRequest) {
           lastName,
         },
       });
-      // TODO: Need to implement delete user event
       console.log('User synced to DB');
+    }
+
+    if (eventType === 'user.deleted') {
+      const user = evt.data as DeletedObjectJSON;
+      const clerkId = user.id;
+
+      await prisma.user.delete({
+        where: { clerkId },
+      });
     }
 
     return new NextResponse('Webhook received', { status: 200 });
